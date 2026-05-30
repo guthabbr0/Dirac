@@ -1,0 +1,31 @@
+[ollama]
+endpoint = "https://ollama.com"
+api_key = "your-api-key-here"
+default_model = "llama3.2"
+request_timeout_s = 120.0
+
+[discord]
+token = "your-discord-token-here"
+i_understand_selfbot_risk = false  # MUST set to true to run
+
+[panel]
+host = "127.0.0.1"
+port = 8765
+auth_token = "change-this-secret-token"
+
+[bot]
+trigger_on = ["ping", "reply"]
+auto_compact_threshold = 0.80
+proactive_memory_enabled = false
+proactive_memory_interval_minutes = 60
+context_window_tokens = 4096
+root_operator_ids = ["1482143139828596916"]
+news_enabled = false
+news_channel_id = "1506027063512141896"
+news_summary_interval_minutes = 180
+news_memory_interval_minutes = 420
+
+[logging]
+console_level = "info"
+component_levels = { "provider" = "info", "discord" = "info", "bot" = "info" }
+provider_http_debug = false

@@ -1,0 +1,665 @@
+{
+  "version": "2026-05-22.1",
+  "tools": [
+    {
+      "name": "react_emoji",
+      "description": "Let Dirac add one emoji reaction to the triggering Discord message while still sending a text reply.",
+      "body": "Parameters: emoji, reason. The reaction targets the message that woke Dirac. This tool is never a substitute for replying: if the model uses react_emoji it must also provide a text reply in the same turn or in the required follow-up turn.",
+      "enabled": true,
+      "executor_name": "react_emoji",
+      "schema": {
+        "type": "function",
+        "function": {
+          "name": "react_emoji",
+          "description": "Add one emoji reaction to the Discord message that woke Dirac, then still send a text reply.",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "emoji": {
+                "type": "string",
+                "description": "The emoji reaction to add."
+              },
+              "reason": {
+                "type": "string",
+                "description": "Why this emoji reaction is appropriate."
+              }
+            },
+            "required": [
+              "emoji",
+              "reason"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "name": "silencer",
+      "description": "Let Dirac block the triggering author in the current scope only when there is a clear justification to stop responding.",
+      "body": "Parameters: user_id, reason. Dirac ignores model-supplied arbitrary user_id values and can only block the triggering author. The reason is required and must justify the block. Root operators, panel, and Dirac's own user can never be silenced. Successful use writes a scoped blocked permission row and suppresses the current reply.",
+      "enabled": true,
+      "executor_name": "silencer",
+      "schema": {
+        "type": "function",
+        "function": {
+          "name": "silencer",
+          "description": "Block the triggering author in the current Discord scope only with a clear reason; never use against root operators.",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "user_id": {
+                "type": "string",
+                "description": "Requested user ID. Dirac will ignore arbitrary values and protect root users."
+              },
+              "reason": {
+                "type": "string",
+                "description": "Required justification for blocking the triggering author."
+              }
+            },
+            "required": [
+              "user_id",
+              "reason"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "name": "current_time",
+      "description": "Let Dirac read the current date and time in Europe/Madrid and UTC.",
+      "body": "Parameters: none. Returns local Europe/Madrid time, UTC time, weekday, and timezone metadata. Tool results require a text follow-up.",
+      "enabled": true,
+      "executor_name": "current_time",
+      "schema": {
+        "type": "function",
+        "function": {
+          "name": "current_time",
+          "description": "Return the current date and time in Europe/Madrid and UTC. Use when exact current time or date matters.",
+          "parameters": {
+            "type": "object",
+            "properties": {}
+          }
+        }
+      }
+    },
+    {
+      "name": "web_fetch",
+      "description": "Fetch one public HTTP/HTTPS URL and return cleaned text for answering the current user.",
+      "body": "Parameters: url, reason. Fetches only public http/https URLs, blocks local/private/metadata networks, sends no cookies or secrets, caps response bytes, returns cleaned text metadata, and requires a text follow-up.",
+      "enabled": true,
+      "executor_name": "web_fetch",
+      "schema": {
+        "type": "function",
+        "function": {
+          "name": "web_fetch",
+          "description": "Fetch one public HTTP/HTTPS URL and return cleaned text for answering the current user.",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "url": {
+                "type": "string",
+                "description": "Public HTTP or HTTPS URL to fetch."
+              },
+              "reason": {
+                "type": "string",
+                "description": "Why this fetch is needed for the user's current request."
+              }
+            },
+            "required": [
+              "url",
+              "reason"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "name": "memory_search",
+      "description": "Search persisted Dirac memories by text and/or one Discord snowflake id.",
+      "body": "Parameters: str_query, str_discord_id, int_limit. Empty arguments return usage. Searches SQLite FTS by terms, not one exact phrase.",
+      "enabled": true,
+      "executor_name": "memory_search",
+      "schema": {
+        "type": "function",
+        "function": {
+          "name": "memory_search",
+          "description": "Search persisted Dirac memories by text and/or one Discord snowflake id.",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "str_query": {
+                "type": "string",
+                "description": "Optional memory search text. Multi-word searches match terms instead of one exact phrase."
+              },
+              "str_discord_id": {
+                "type": "string",
+                "description": "Optional Discord snowflake id as digits only. Mentions are accepted."
+              },
+              "int_limit": {
+                "type": "integer",
+                "description": "Maximum rows to return, capped by Dirac."
+              }
+            }
+          }
+        }
+      },
+      "schema_json": {
+        "type": "function",
+        "function": {
+          "name": "memory_search",
+          "description": "Search persisted Dirac memories by text and/or one Discord snowflake id.",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "str_query": {
+                "type": "string",
+                "description": "Optional memory search text. Multi-word searches match terms instead of one exact phrase."
+              },
+              "str_discord_id": {
+                "type": "string",
+                "description": "Optional Discord snowflake id as digits only. Mentions are accepted."
+              },
+              "int_limit": {
+                "type": "integer",
+                "description": "Maximum rows to return, capped by Dirac."
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "discord_id",
+      "description": "Resolve a Discord snowflake id to known user, channel, guild, nickname, and local history references.",
+      "body": "Parameters: id, reason. Use this when a message contains a raw Discord snowflake or when the model needs to distinguish a user id, channel id, guild id, or the root operator from ordinary numbers. Returns known names and scope references from runtime context and persisted messages.",
+      "enabled": true,
+      "executor_name": "discord_id",
+      "schema": {
+        "type": "function",
+        "function": {
+          "name": "discord_id",
+          "description": "Resolve a Discord user/channel/guild id using current message context and persisted message history.",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "description": "Discord snowflake id or mention such as <@123> or <#123>."
+              },
+              "reason": {
+                "type": "string",
+                "description": "Why resolving this id matters for the current answer."
+              }
+            },
+            "required": [
+              "id",
+              "reason"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "name": "memory_add",
+      "description": "Add one durable Dirac memory for one Discord snowflake id.",
+      "body": "Parameters: str_discord_id, str_annotations, array_tags, float_confidence. Dirac stores one durable memory for one Discord snowflake id.",
+      "enabled": true,
+      "executor_name": "memory_add",
+      "schema": {
+        "type": "function",
+        "function": {
+          "name": "memory_add",
+          "description": "Add one durable Dirac memory for one Discord snowflake id.",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "str_discord_id": {
+                "type": "string",
+                "description": "Discord user/channel/guild snowflake id as digits only. Mentions are accepted."
+              },
+              "str_annotations": {
+                "type": "string",
+                "description": "The durable memory text to preserve."
+              },
+              "array_tags": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "description": "Optional short tags as strings."
+              },
+              "float_confidence": {
+                "type": "number",
+                "description": "Optional confidence from 0.0 to 1.0."
+              }
+            },
+            "required": [
+              "str_discord_id",
+              "str_annotations"
+            ]
+          }
+        }
+      },
+      "schema_json": {
+        "type": "function",
+        "function": {
+          "name": "memory_add",
+          "description": "Add one durable Dirac memory for one Discord snowflake id.",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "str_discord_id": {
+                "type": "string",
+                "description": "Discord user/channel/guild snowflake id as digits only. Mentions are accepted."
+              },
+              "str_annotations": {
+                "type": "string",
+                "description": "The durable memory text to preserve."
+              },
+              "array_tags": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "description": "Optional short tags as strings."
+              },
+              "float_confidence": {
+                "type": "number",
+                "description": "Optional confidence from 0.0 to 1.0."
+              }
+            },
+            "required": [
+              "str_discord_id",
+              "str_annotations"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "name": "memory_update",
+      "description": "Supersede an existing durable memory by id.",
+      "body": "Parameters: int_memory_id, str_annotations, array_tags, float_confidence. Creates a replacement row and links the older row as superseded.",
+      "enabled": true,
+      "executor_name": "memory_update",
+      "schema": {
+        "type": "function",
+        "function": {
+          "name": "memory_update",
+          "description": "Supersede an existing durable memory by id.",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "int_memory_id": {
+                "type": "integer"
+              },
+              "str_annotations": {
+                "type": "string"
+              },
+              "array_tags": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "float_confidence": {
+                "type": "number"
+              }
+            },
+            "required": [
+              "int_memory_id",
+              "str_annotations"
+            ]
+          }
+        }
+      },
+      "schema_json": {
+        "type": "function",
+        "function": {
+          "name": "memory_update",
+          "description": "Supersede an existing durable memory by id.",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "int_memory_id": {
+                "type": "integer"
+              },
+              "str_annotations": {
+                "type": "string"
+              },
+              "array_tags": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "float_confidence": {
+                "type": "number"
+              }
+            },
+            "required": [
+              "int_memory_id",
+              "str_annotations"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "name": "memory_delete",
+      "description": "Delete a durable memory row and its superseded chain.",
+      "body": "Parameters: int_memory_id. Deletes a memory row and its superseded chain.",
+      "enabled": true,
+      "executor_name": "memory_delete",
+      "schema": {
+        "type": "function",
+        "function": {
+          "name": "memory_delete",
+          "description": "Delete a durable memory row and its superseded chain.",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "int_memory_id": {
+                "type": "integer"
+              }
+            },
+            "required": [
+              "int_memory_id"
+            ]
+          }
+        }
+      },
+      "schema_json": {
+        "type": "function",
+        "function": {
+          "name": "memory_delete",
+          "description": "Delete a durable memory row and its superseded chain.",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "int_memory_id": {
+                "type": "integer"
+              }
+            },
+            "required": [
+              "int_memory_id"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "name": "bash",
+      "description": "Root-only Bash tool for Dirac diagnostics and repair.",
+      "body": "Parameters: command, cwd, timeout_s. Runs the command through /bin/bash with repo cwd by default, captures stdout/stderr, redacts known secrets, and caps output. This is root-operator only on Discord; prefer python doctor.py for SQLite, memory, tool, config, and online diagnostics.",
+      "enabled": true,
+      "executor_name": "bash",
+      "schema": {
+        "type": "function",
+        "function": {
+          "name": "bash",
+          "description": "Run a Bash command for the root operator. Prefer python doctor.py for Dirac state repair.",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "command": {
+                "type": "string"
+              },
+              "cwd": {
+                "type": "string"
+              },
+              "timeout_s": {
+                "type": "number"
+              }
+            },
+            "required": [
+              "command"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "name": "web_search",
+      "description": "Search the public web and return compact result titles/URLs for a required follow-up answer.",
+      "body": "Parameters: query, limit. Uses the same bounded public-web search helper as Roxanne. Tool results require a text follow-up and failures are returned to the model with error names.",
+      "enabled": true,
+      "executor_name": "web_search",
+      "schema": {
+        "type": "function",
+        "function": {
+          "name": "web_search",
+          "description": "Search the public web and return compact result titles/URLs for a required follow-up answer.",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "query": {
+                "type": "string"
+              },
+              "limit": {
+                "type": "integer"
+              }
+            },
+            "required": [
+              "query"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "name": "memory_edit",
+      "description": "Alias for memory_update.",
+      "body": "Alias for memory_update. Parameters: int_memory_id, str_annotations, array_tags, float_confidence.",
+      "enabled": true,
+      "executor_name": "memory_update",
+      "schema": {
+        "type": "function",
+        "function": {
+          "name": "memory_edit",
+          "description": "Alias for memory_update.",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "int_memory_id": {
+                "type": "integer"
+              },
+              "str_annotations": {
+                "type": "string"
+              },
+              "array_tags": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "float_confidence": {
+                "type": "number"
+              }
+            },
+            "required": [
+              "int_memory_id",
+              "str_annotations"
+            ]
+          }
+        }
+      },
+      "schema_json": {
+        "type": "function",
+        "function": {
+          "name": "memory_edit",
+          "description": "Alias for memory_update.",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "int_memory_id": {
+                "type": "integer"
+              },
+              "str_annotations": {
+                "type": "string"
+              },
+              "array_tags": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "float_confidence": {
+                "type": "number"
+              }
+            },
+            "required": [
+              "int_memory_id",
+              "str_annotations"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "name": "memory_remove",
+      "description": "Alias for memory_delete.",
+      "body": "Alias for memory_delete. Parameters: int_memory_id.",
+      "enabled": true,
+      "executor_name": "memory_delete",
+      "schema": {
+        "type": "function",
+        "function": {
+          "name": "memory_remove",
+          "description": "Alias for memory_delete.",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "int_memory_id": {
+                "type": "integer"
+              }
+            },
+            "required": [
+              "int_memory_id"
+            ]
+          }
+        }
+      },
+      "schema_json": {
+        "type": "function",
+        "function": {
+          "name": "memory_remove",
+          "description": "Alias for memory_delete.",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "int_memory_id": {
+                "type": "integer"
+              }
+            },
+            "required": [
+              "int_memory_id"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "name": "discord_ground",
+      "description": "Bulk-resolve Discord snowflakes, mentions, channels, and known identity tags into trusted JSON grounding.",
+      "body": "Parameters: ids, text, reason. Use when raw Discord numbers or semi-filled mention tags appear. Returns trusted metadata and persistent labels from discord_identity_map. Call discord_tag to improve a label.",
+      "enabled": true,
+      "executor_name": "discord_ground",
+      "schema": {
+        "type": "function",
+        "function": {
+          "name": "discord_ground",
+          "description": "Bulk-resolve Discord snowflakes, mentions, channels, and known identity tags into trusted JSON grounding.",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "ids": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "text": {
+                "type": "string"
+              },
+              "reason": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "discord_tag",
+      "description": "Add or replace the stable 255-character label for one Discord snowflake in Dirac identity mapping.",
+      "body": "Parameters: id/snowflake, label, kind. There is intentionally no delete operation; calling discord_tag again replaces the label. Use concise labels that make future context deterministic.",
+      "enabled": true,
+      "executor_name": "discord_tag",
+      "schema": {
+        "type": "function",
+        "function": {
+          "name": "discord_tag",
+          "description": "Add or replace the stable 255-character label for one Discord snowflake in Dirac identity mapping.",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "snowflake": {
+                "type": "string"
+              },
+              "label": {
+                "type": "string",
+                "maxLength": 255
+              },
+              "kind": {
+                "type": "string",
+                "enum": [
+                  "user",
+                  "channel",
+                  "guild",
+                  "unknown"
+                ]
+              }
+            },
+            "required": [
+              "label"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "name": "dyslexic_helper",
+      "description": "Deterministically replace ugly Discord mentions/snowflakes in long text with stable labels from Dirac identity mapping.",
+      "body": "Parameters: text, ids. Returns normalized text, replacements applied, and missing ids that may need discord_tag. This is a formatting helper for memory/context digestion, not a chat answer by itself.",
+      "enabled": true,
+      "executor_name": "dyslexic_helper",
+      "schema": {
+        "type": "function",
+        "function": {
+          "name": "dyslexic_helper",
+          "description": "Deterministically replace ugly Discord mentions/snowflakes in long text with stable labels from Dirac identity mapping.",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "text": {
+                "type": "string"
+              },
+              "ids": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            },
+            "required": [
+              "text"
+            ]
+          }
+        }
+      }
+    }
+  ]
+}

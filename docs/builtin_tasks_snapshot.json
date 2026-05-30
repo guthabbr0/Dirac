@@ -1,0 +1,16 @@
+{
+  "version": "2026-05-22.1",
+  "tasks": [
+    {
+      "name": "rem_dream",
+      "description": "Periodic REM memory assimilation over recent visible inputs and outputs.",
+      "prompt": "Run Dirac REM memory assimilation. Review the short-term memory slice injected by the scheduler. Search existing memories before adding or editing. Consolidate durable facts, preferences, decisions, stale news, identity mappings, and unresolved work. Do not let useful context vanish like tears in rain. Delete or supersede memory bloat when it is clearly obsolete. Use Discord grounding tools for snowflakes and use memory_add, memory_edit/memory_update, or memory_delete for durable changes. Answer DONE with a short audit list when complete.",
+      "schedule_minutes": 10,
+      "scope_type": "global",
+      "scope_id": null,
+      "runtime_kind": "rem",
+      "enabled": true,
+      "max_runs": null
+    }
+  ]
+}
