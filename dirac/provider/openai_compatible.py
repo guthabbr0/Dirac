@@ -31,7 +31,15 @@ class OpenAICompatibleProviderClient(BaseProviderClient):
         }
         if request.tools:
             body["tools"] = request.tools
-        for key in ("temperature", "top_p", "max_tokens", "presence_penalty", "frequency_penalty", "seed", "response_format"):
+        for key in (
+            "temperature",
+            "top_p",
+            "max_tokens",
+            "presence_penalty",
+            "frequency_penalty",
+            "seed",
+            "response_format",
+        ):
             if key in request.params:
                 body[key] = request.params[key]
         headers = dict(self.default_headers)
@@ -42,7 +50,9 @@ class OpenAICompatibleProviderClient(BaseProviderClient):
             response.raise_for_status()
             raw = response.json()
         choices = raw.get("choices") or []
-        message = (choices[0].get("message") if choices and isinstance(choices[0], dict) else {}) or {}
+        message = (
+            choices[0].get("message") if choices and isinstance(choices[0], dict) else {}
+        ) or {}
         usage = raw.get("usage") if isinstance(raw.get("usage"), dict) else {}
         return ProviderResponse(
             content=message.get("content") or "",

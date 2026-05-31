@@ -14,7 +14,7 @@ def normalize_discord_id(value: Any) -> str:
     text = str(value or "").strip()
     for prefix, suffix in (("<@!", ">"), ("<@", ">"), ("<#", ">")):
         if text.startswith(prefix) and text.endswith(suffix):
-            text = text[len(prefix):-len(suffix)]
+            text = text[len(prefix) : -len(suffix)]
             break
     match = DISCORD_ID_SEARCH_RE.search(text)
     return match.group(1) if match else text
@@ -65,5 +65,7 @@ def usage(tool_name: str) -> dict[str, Any]:
 
 def validation_error(tool_name: str, issues: list[str]) -> dict[str, Any]:
     payload = usage(tool_name)
-    payload.update({"ok": False, "error": "invalid_arguments", "issues": issues, "needs_model_followup": True})
+    payload.update(
+        {"ok": False, "error": "invalid_arguments", "issues": issues, "needs_model_followup": True}
+    )
     return payload

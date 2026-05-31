@@ -12,7 +12,11 @@ def redact(value: Any) -> Any:
         out = {}
         for key, item in value.items():
             name = str(key).lower()
-            out[key] = REDACTED if item and any(fragment in name for fragment in SECRET_KEY_FRAGMENTS) else redact(item)
+            out[key] = (
+                REDACTED
+                if item and any(fragment in name for fragment in SECRET_KEY_FRAGMENTS)
+                else redact(item)
+            )
         return out
     if isinstance(value, list):
         return [redact(item) for item in value]

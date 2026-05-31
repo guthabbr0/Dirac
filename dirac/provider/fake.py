@@ -13,4 +13,6 @@ class FakeProviderClient(BaseProviderClient):
 
     async def chat(self, request: ProviderRequest) -> ProviderResponse:
         self.requests.append(request)
-        return ProviderResponse(content=self.content, raw={"fake": True}, provider_name=self.name, model=request.model)
+        return ProviderResponse(
+            content=self.content, raw={"fake": True}, provider_name=self.name, model=request.model
+        )

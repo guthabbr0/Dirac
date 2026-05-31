@@ -4,9 +4,8 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "dirac"
-version = "0.0.0"
+version = "0.1.0"
 description = "Modular Python runtime for Discord-centered agent work."
-readme = "README.md"
 requires-python = ">=3.14"
 dependencies = [
   "discord.py-self>=2.0",
@@ -18,6 +17,12 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
+dev = [
+    "mypy>=1.11",
+    "ruff>=0.6",
+    "pre-commit>=3.8",
+]
+
 test = [
   "pytest>=8.0",
   "pytest-asyncio>=0.23",
@@ -32,3 +37,37 @@ include = ["dirac*"]
 testpaths = ["tests"]
 pythonpath = ["."]
 asyncio_mode = "auto"
+
+[tool.unittest]
+testpaths = ["tests"]
+
+[tool.ruff]
+line-length = 100
+src = ["bot.py", "doctor.py", "web", "dirac", "tests"]
+
+[tool.ruff.lint]
+# ANN bans untyped defs and (via ANN401) the use of `typing.Any` in
+# annotations, enforcing the "no Any abuse / encapsulate parameters" rule.
+# Any that is genuinely unavoidable at the JSON/transport boundary is allowed
+# only via an explicit, justified `# noqa: ANN401` on the offending line.
+select = ["E", "F", "I", "B", "UP", "ANN"]
+
+[tool.ruff.lint.per-file-ignores]
+# Tests favour readability over exhaustive annotations.
+"tests/**" = ["ANN"]
+
+[tool.ruff.lint.isort]
+force-sort-within-sections = true
+
+[tool.mypy]
+# Strict typing is the blocking gate. `--strict` already enables
+# disallow_untyped_defs, disallow_any_generics, warn_return_any,
+# no_implicit_optional, and friends; they are restated here for visibility.
+files = ["*]
+strict = true
+disallow_untyped_defs = true
+disallow_any_generics = true
+warn_return_any = true
+no_implicit_optional = true
+warn_unused_ignores = true
+warn_redundant_casts = true

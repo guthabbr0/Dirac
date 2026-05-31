@@ -20,16 +20,24 @@ def parse_utc(value: str | None) -> datetime | None:
 
 def utc_after_minutes(minutes: int, *, base: datetime | None = None) -> str:
     origin = base or datetime.now(timezone.utc)
-    return (origin + timedelta(minutes=max(1, int(minutes)))).isoformat(timespec="milliseconds").replace("+00:00", "Z")
+    return (
+        (origin + timedelta(minutes=max(1, int(minutes))))
+        .isoformat(timespec="milliseconds")
+        .replace("+00:00", "Z")
+    )
 
 
 class LooseTaskScheduler:
     """Cron-like selector: every tick, run at most one random due task."""
 
-    def __init__(self, *, choice: Callable[[Sequence[TaskDefinition]], TaskDefinition] | None = None) -> None:
+    def __init__(
+        self, *, choice: Callable[[Sequence[TaskDefinition]], TaskDefinition] | None = None
+    ) -> None:
         self.choice = choice or random.choice
 
-    def due_tasks(self, tasks: Sequence[TaskDefinition], *, now: datetime | None = None) -> list[TaskDefinition]:
+    def due_tasks(
+        self, tasks: Sequence[TaskDefinition], *, now: datetime | None = None
+    ) -> list[TaskDefinition]:
         current = now or datetime.now(timezone.utc)
         due: list[TaskDefinition] = []
         for task in tasks:
@@ -42,7 +50,9 @@ class LooseTaskScheduler:
                 due.append(task)
         return due
 
-    def pick_one_and_advance(self, tasks: Sequence[TaskDefinition], *, now: datetime | None = None) -> TaskDefinition | None:
+    def pick_one_and_advance(
+        self, tasks: Sequence[TaskDefinition], *, now: datetime | None = None
+    ) -> TaskDefinition | None:
         current = now or datetime.now(timezone.utc)
         due = self.due_tasks(tasks, now=current)
         if not due:

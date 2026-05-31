@@ -10,7 +10,9 @@ from .base import BaseProviderClient, ProviderError
 class ProviderRouter(BaseProviderClient):
     """Chooses one provider client without leaking concrete clients upstream."""
 
-    def __init__(self, providers: Mapping[str, BaseProviderClient], default: str = "default") -> None:
+    def __init__(
+        self, providers: Mapping[str, BaseProviderClient], default: str = "default"
+    ) -> None:
         self.providers = dict(providers)
         self.default = default
         self.name = "router"

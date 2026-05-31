@@ -14,7 +14,9 @@ class PermissionDecision:
 class PermissionService:
     """Deterministic gate that runs before any provider call."""
 
-    def __init__(self, root_operator_ids: set[str] | None = None, blocked_user_ids: set[str] | None = None) -> None:
+    def __init__(
+        self, root_operator_ids: set[str] | None = None, blocked_user_ids: set[str] | None = None
+    ) -> None:
         self.root_operator_ids = set(root_operator_ids or set())
         self.blocked_user_ids = set(blocked_user_ids or set())
 
@@ -24,10 +26,17 @@ class PermissionService:
             return PermissionDecision(False, "blocked")
         if command in {"kill", "stop", "pause", "resume"} and user_id not in self.root_operator_ids:
             return PermissionDecision(False, "ultimate_only")
-        if command in {"tool", "tools", "task", "tasks", "provider", "providers", "scope", "scopes"} and user_id not in self.root_operator_ids:
+        if (
+            command
+            in {"tool", "tools", "task", "tasks", "provider", "providers", "scope", "scopes"}
+            and user_id not in self.root_operator_ids
+        ):
             return PermissionDecision(False, "root_only")
         return PermissionDecision(True)
 
     async def can_enter_context(self, user_id: str, scope: Scope) -> PermissionDecision:
         _ = scope
-        return PermissionDecision(user_id not in self.blocked_user_ids, "blocked" if user_id in self.blocked_user_ids else "ok")
+        return PermissionDecision(
+            user_id not in self.blocked_user_ids,
+            "blocked" if user_id in self.blocked_user_ids else "ok",
+        )
